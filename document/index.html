@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="kitchensink">
+
+<head>
+    <meta charset="utf-8">
+    <title>Editor | Pro</title>
+    <link rel="stylesheet" href="css/master.css">
+    <link rel="stylesheet" href="css/prism.css">
+    <style>pre{margin-left:15px!important}</style>
+    <style>.thumb{height:165px;border:1px solid #000;margin:1px 1px 10px 40px;}</style>
+    <!--[if lt IE 9]>
+          <script src="js/excanvas.js"></script>
+        <![endif]-->
+    <script src="js/prism.js"></script>
+    <script src="js/fabric.js"></script>
+    <script src="js/master.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script type='text/javascript'>//<![CDATA[ 
+        function draw(ev) {
+            console.log(ev);
+            var ctx = document.getElementById('canvas').getContext('2d'),
+                img = new Image(),
+                f = document.getElementById("uploadimage").files[0],
+                url = window.URL || window.webkitURL,
+                src = url.createObjectURL(f);
+            img.src = src;
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                url.revokeObjectURL(src);
+            }
+        }
+        document.getElementById("uploadimage").addEventListener("change", draw, false)
+        //]]>
+    </script>
+
+    <!--[if IE]><script src="js/../lib/fonts/Delicious.font.js"></script><![endif]-->
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/paster.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/kitchensink.css">
+</head>
+
+<body bgcolor="black">
+    <div class="container" id="bd-wrapper" ng-controller="CanvasControls">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-5">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Panel de Diseño</div>
+                    <div class="panel-body">
+                        <canvas ng-init="addBackgroundImageX('polo1.jpg')" id="canvas" width="440" height="450"></canvas>
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading">Lista de Productos</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-6 col-md-3">
+                                <a href="" class="thumbnail">
+                                    <img ng-click="addBackgroundImageX('polo1.jpg')" src="../assets/polo1.jpg" alt="...">
+                                </a>
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <a href="" class="thumbnail">
+                                    <img ng-click="addBackgroundImageX('polo2.jpg')" src="../assets/polo2.jpg" alt="...">
+                                </a>
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <a href="" class="thumbnail">
+                                    <img ng-click="addBackgroundImageX('polo3.jpg')" src="../assets/polo3.jpg" alt="...">
+                                </a>
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <a href="" class="thumbnail">
+                                    <img ng-click="addBackgroundImageX('polo4.jpg')" src="../assets/polo4.jpg" alt="...">
+                                </a>
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <a href="" class="thumbnail">
+                                    <img ng-click="addBackgroundImageX('polo5.jpg')" src="../assets/polo5.jpg" alt="...">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Ópciones de Diseño</div>
+                    <div class="panel-body">
+                        <div id="commands" ng-click="maybeLoadShape($event)">
+                            <ul class="nav nav-tabs">                                
+                                <li class="active"><a href="#object-controls-panel" data-toggle="tab">Vista De Dideño</a></li>
+                                <!-- <li><a href="#simple-shapes" data-toggle="tab">Vista De Producto</a></li> -->
+                            </ul>
+                            <div class="tab-content">
+                                <!-- PANEL 1 -->
+                                <div class="tab-pane active" id="object-controls-panel">
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12 text-center">
+                                            <div class="btn-group">
+                                                <button class="btn btn-danger" id="remove-selected" ng-click="removeSelected()">Eliminar Elemento</button>
+                                            </div>
+                                            <div class="btn-group">
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-default" ng-click="addText()">Agregar Texto</button>
+                                                </div>
+                                            </div>
+                                            <div class="btn-group">
+                                                <label class="btn btn-default btn-file">
+                                                    Agregar Imagen <input type="file" style="display: none;" id="imgLoader">
+                                                </label>
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12 text-center">                                            
+                                            <div class="btn-group" object-buttons-enabled="getSelected()">
+                                                <button id="send-backwards" type="button" class="btn btn-default btn-object-action" aria-label="" ng-click="sendBackwards()">
+                                                    <span class="fa fa-arrow-down" aria-hidden="true"></span>
+                                                </button>
+                                                <button id="bring-forward" type="button" class="btn btn-default btn-object-action" aria-label="" ng-click="bringForward()">
+                                                    <span class="fa fa-arrow-up" aria-hidden="true"></span>
+                                                </button> 
+                                                <button id="shadowify" type="button" class="btn btn-default btn-object-action" aria-label="" ng-click="shadowify()">
+                                                    <span class="fa fa-adjust" aria-hidden="true"></span>
+                                                </button>
+                                                <button id="clip" type="button" class="btn btn-default btn-object-action" aria-label="" ng-click="clip()">
+                                                    <span class="fa fa-bullseye" aria-hidden="true"></span>
+                                                </button>
+                                                <button id="grayscale" type="button" class="btn btn-default btn-object-action" aria-label="" ng-init="count=1" ng-click="grayscale(count = count * -1)">
+                                                    <span class="fa fa-circle" aria-hidden="true"></span>
+                                                </button>
+                                                <button id="sepia" type="button" class="btn btn-default btn-object-action" aria-label="" ng-init="count=1" ng-click="sepia(count = count * -1)">
+                                                    <span class="fa fa-circle-o" aria-hidden="true"></span>
+                                                </button>
+                                                <button id="brownie" type="button" class="btn btn-default btn-object-action" aria-label="" ng-init="count=1" ng-click="brownie(count = count * -1)">
+                                                    <span class="fa fa-bookmark" aria-hidden="true"></span>
+                                                </button>
+                                                <button id="border" type="button" class="btn btn-default btn-object-action" aria-label="" ng-init="count=1" ng-click="border(count = count * -1)">
+                                                    <span class="fa fa-square-o" aria-hidden="true"></span>
+                                                </button>
+                                            </div> 
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row" object-buttons-enabled="getSelected()">
+                                        <div class="col-md-6 text-center">
+                                            <div class="input-group" role="group">
+                                                <span class="input-group-addon">Brillo</span>
+                                                <input id="opacity" class="form-control btn-object-action" value="100" type="range" bind-value-to="opacity">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 text-center">
+                                            <div class="input-group" role="group">
+                                                <span class="input-group-addon">Color Fondo</span>
+                                                <input id="text-bg-color" class="form-control btn-object-action" type="color" bind-value-to="bgColor">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row" ng-show="getText()">
+                                        <div class="col-md-12 text-center">
+                                            <div class="btn-group" object-buttons-enabled="getSelected()">
+                                                <button type="button" class="btn btn-default btn-object-action" ng-click="toggleBold()" ng-class="{'btn-inverse': isBold()}">
+                                                    <span class="fa fa-bold" aria-hidden="true"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-object-action" id="text-cmd-italic" ng-click="toggleItalic()" ng-class="{'btn-inverse': sItalic()}">
+                                                    <span class="fa fa-italic" aria-hidden="true"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-object-action" id="text-cmd-underline" ng-click="toggleUnderline()" ng-class="{'btn-inverse': isUnderline()}">
+                                                    <span class="fa fa-underline" aria-hidden="true"></span>
+                                                </button> 
+                                                <button type="button" class="btn btn-default btn-object-action" id="text-cmd-linethrough" ng-click="toggleLinethrough()" ng-class="{'btn-inverse': isLinethrough()}">
+                                                    <span class="fa fa-strikethrough" aria-hidden="true"></span>
+                                                </button>
+
+                                                <button type="button" class="btn btn-default btn-object-action" id="text-cmd-underline" ng-click="toggleUnderline()" ng-class="{'btn-inverse': isUnderline()}">
+                                                    <span class="fa fa-underline" aria-hidden="true"></span>
+                                                </button> 
+
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <span class="fa fa-align-justify" aria-hidden="true"></span>
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul id="text-align" class="dropdown-menu btn-object-action list-inline" style="min-width: 214px" bind-value-to="textAlign">
+                                                        <li class="list-inline-item">
+                                                            <button type="button" class="btn btn-default btn-object-action" ng-click="setTextAlign('Left')">
+                                                                <span class="fa fa-align-left" aria-hidden="true"></span>
+                                                            </button>
+                                                        </li>
+                                                        <li class="list-inline-item">
+                                                            <button type="button" class="btn btn-default btn-object-action" ng-click="setTextAlign('Center')">
+                                                                <span class="fa fa-align-center" aria-hidden="true"></span>
+                                                            </button>
+                                                        </li>
+                                                        <li class="list-inline-item">
+                                                            <button type="button" class="btn btn-default btn-object-action" ng-click="setTextAlign('Right')">
+                                                                <span class="fa fa-align-right" aria-hidden="true"></span>
+                                                            </button>
+                                                        </li>
+                                                        <li class="list-inline-item">
+                                                            <button type="button" class="btn btn-default btn-object-action" ng-click="setTextAlign('Justify')">
+                                                                <span class="fa fa-align-justify" aria-hidden="true"></span>
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <span class="fa fa-font" aria-hidden="true"></span>
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul id="text-font" class="dropdown-menu scrollable-menu" bind-value-to="textFont">
+                                                        <li ng-click="setFontFamily('arial')"><a style="font-family: 'arial';" href="">Arial</a></li>
+                                                        <li ng-click="setFontFamily('helvetica')"><a style="font-family: 'helvetica';" href="">Helvetica</a></li>
+                                                        <li ng-click="setFontFamily('myriad pro')"><a style="font-family: 'myriad pro';" href="">Myriad Pro</a></li>
+                                                        <li ng-click="setFontFamily('delicious')"><a style="font-family: 'delicious';" href="">Delicious</a></li>
+                                                        <li ng-click="setFontFamily('verdana')"><a style="font-family: 'verdana';" href="">Verdana</a></li>
+                                                        <li ng-click="setFontFamily('georgia')"><a style="font-family: 'georgia';" href="">Georgia</a></li>
+                                                        <li ng-click="setFontFamily('courier')"><a style="font-family: 'courier';" href="">Courier</a></li>
+                                                        <li ng-click="setFontFamily('comic sans ms')"><a style="font-family: 'comic-sans-ms';" href="">Comic Sans MS</a></li>
+                                                        <li ng-click="setFontFamily('impact')"><a style="font-family: 'impact';" href="">Impact</a></li>
+                                                        <li ng-click="setFontFamily('monaco')"><a style="font-family: 'monaco';" href="">Monaco</a></li>
+                                                        <li ng-click="setFontFamily('optima')"><a style="font-family: 'optima';" href="">Optima</a></li>
+                                                        <li ng-click="setFontFamily('hoefler text')"><a style="font-family: 'hoefler text';" href="">Hoefler Text</a></li>
+                                                        <li ng-click="setFontFamily('plaster')"><a style="font-family: 'plaster';" href="">Plaster</a></li>
+                                                        <li ng-click="setFontFamily('engagement')"><a style="font-family: 'engagement';" href="">Engagement</a></li>
+                                                    </ul>
+                                                </div>
+
+                                                <input id="color" type="color"  class="btn btn-default btn-object-action" bind-value-to="fill">
+                                            </div> 
+                                        </div>                                        
+                                    </div>
+
+                                    <div class="row" ng-show="getText()">
+                                        <div class="col-md-12 text-center">
+                                            <div class="form-group">
+                                                <label for="comment">Texto:</label>
+                                                <textarea class="form-control btn-object-action" rows="4" bind-value-to="text"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 text-center">
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary" id="rasterizePNG" ng-click="rasterizePNG()">Vista Previa</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- PANEL 2 -->
+                                <!-- <div class="tab-pane" id="simple-shapes">
+                                    IMAGEN
+                                </div> -->
+                            </div>
+                            
+                            <script>
+                                var kitchensink = { };
+                                var canvas = new fabric.Canvas('canvas');
+                            </script>
+                            <script src="js/utils.js"></script>
+                            <script src="js/app_config.js"></script>
+                            <script src="js/controller.js"></script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--/row-->
+        <hr>
+        <footer>
+            <p>&copy; 2017 Company, Inc.</p>
+        </footer>
+    </div><!--/.container-->
+    <script>
+        (function(){
+            var mainScriptEl = document.getElementById('main');
+            if (!mainScriptEl) return;
+            var preEl = document.createElement('pre');
+            var codeEl = document.createElement('code');
+            codeEl.innerHTML = mainScriptEl.innerHTML;
+            codeEl.className = 'language-javascript';
+            preEl.appendChild(codeEl);
+            document.getElementById('bd-wrapper').appendChild(preEl);
+        })();
+    </script>
+
+    <script>
+        (function() {
+            fabric.util.addListener(fabric.window, 'load', function() {
+                var canvas = this.__canvas || this.canvas, canvases = this.__canvases || this.canvases;
+                canvas && canvas.calcOffset && canvas.calcOffset();
+                if (canvases && canvases.length) {
+                    for (var i = 0, len = canvases.length; i < len; i++) {
+                        canvases[i].calcOffset();
+                    }
+                }
+            });
+        })();
+    </script>
+
+    <script>
+        document.getElementById('imgLoader').onchange = function handleImage(e) {
+            var reader = new FileReader();
+            reader.onload = function (event) { 
+                var imgObj = new Image();
+                imgObj.src = event.target.result;
+                imgObj.onload = function () {
+                    // start fabricJS stuff
+                    var image = new fabric.Image(imgObj);
+                    image.set({
+                        left: 150,
+                        top: 150,
+                        angle: 0,
+                        padding: 10,
+                        cornersize: 10
+                    })
+                    .scale(0.5);
+                    canvas.add(image);
+                    // end fabricJS stuff
+                }
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    </script>
+
+    <script>
+        var imageLoader = document.getElementById('imageLoader');
+        imageLoader.addEventListener('change', handleImage, false);
+        function handleImage(e) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var img = new Image();
+                img.onload = function () {
+                    var imgInstance = new fabric.Image(img, {
+                        scaleX: 0.2,
+                        scaleY: 0.2
+                    })
+                    canvas.add(imgInstance);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    </script>
+
+    <script>
+        (function() {
+            if (document.location.hostname === 'localhost') {
+                var links = document.getElementById('header').getElementsByTagName('a');
+                for (var i = 0, len = links.length; i < len; i++) {
+                  // very retarted fix but fuck it
+                  links[i].href = links[i].href.replace('fabricjs.com', 'localhost:4000');
+                }
+            }else {
+                /*var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+                s.async = true;
+                s.src = '../../../button.flattr.com/loader1276.js?mode=auto';
+                t.parentNode.insertBefore(s, t);
+
+                !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="../../../platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");*/
+            }
+        })();
+    </script>
+
+    <script type='text/javascript'> 
+        (function handleImage(e){
+            var reader = new FileReader();
+            reader.onload = function(event){
+                var img = new Image();
+                img.onload = function(){
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img,0,0);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);     
+            canvas.add(imageLoader);
+        })();
+    </script>
+
+</body>
+</html>
